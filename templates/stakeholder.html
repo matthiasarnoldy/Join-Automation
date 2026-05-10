@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join</title>
+
+    <link rel="icon" href="../assets/icons/desktop/logoFavicon.svg" type="image/svg+xml"
+        media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="../assets/icons/desktop/logo.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+
+    <script src="../scripts/template.js"></script>
+    <script src="../scripts/legalInformation.js"></script>
+    <script src="../scripts/global-auth-routing.js"></script>
+    <script src="../scripts/daily-request-limit-init.js"></script>
+    <script src="../script.js"></script>
+
+    <link rel="stylesheet" href="../styles/standard.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../styles/login/layout.css">
+    <link rel="stylesheet" href="../styles/login/forms.css">
+    <link rel="stylesheet" href="../styles/login/buttons.css">
+    <link rel="stylesheet" href="../styles/login/responsive.css">
+    <link rel="stylesheet" href="../styles/welcome.css">
+    <link rel="stylesheet" href="../styles/stakeholder.css">
+</head>
+
+<body class="stakeholder">
+    <main class="stakeholder__content">
+        <div class="stakeholder__request">
+            <img class="stakeholder__arrowBack" src="../assets/icons/desktop/arrowBack.svg" alt="">
+            <p class="stakeholder__request--text">
+                <span class="stakeholder__request--number">0</span>
+                of
+                <span class="stakeholder__request--number">10</span>
+                requests used today
+            </p>
+        </div>
+        <div class="stakeholder__overview">
+            <h1 class="stakeholder__overview--headline">Welcome</h1>
+            <div class="stakeholder__info">
+                <div class="stakeholder__info--content">
+                    <h2 class="stakeholder__info--headline">Easily create a ticket by sending an email — no extra steps needed.</h2>
+                    <p class="stakeholder__info--text stakeholder__info--padding">On this platform, you can submit your feature requests via email. Our AI system will automatically generate a ticket with a deadline and priority level.</p>
+                    <p class="stakeholder__info--text">A total of 10 requests can be created per day. After this limit, emails can still be sent, but they will be manually reviewed by our team instead of generating AI tickets.</p>
+                </div>
+                <img class="stakeholder__info--img" src="../assets/icons/desktop/stakeholderImg.png" alt="">
+            </div>
+            <a class="stakeholder__button" href="mailto:">
+                <span>Create Email Request</span>
+                <img src="../assets/icons/desktop/stakeholder__check.svg" alt="">
+            </a>
+        </div>
+    </main>
+    <footer class="login__legalInformation--area stakeholder__legalInformation">
+        <a href="./privacy-Policy.html?from=login" class="login__legalInformation" id="index-privacy-policy"
+            onclick="return prepareLoginLegalNavigation()">
+            Privacy Policy
+        </a>
+        <a href="./legalnotice.html?from=login" class="login__legalInformation" id="index-legal-notice"
+            onclick="return prepareLoginLegalNavigation()">Legal Notice</a>
+    </footer>
+</body>
+
+</html>

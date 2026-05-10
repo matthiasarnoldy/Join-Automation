@@ -1,0 +1,127 @@
+html {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    background-color: #F6F7F8;
+}
+
+.stakeholder {
+    width: 100%;
+    max-width: 1440px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.stakeholder__content {
+    width: fit-content;
+    max-width: 1440px;
+    padding-top: 85px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 56px;
+}
+
+.stakeholder__request {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stakeholder__arrowBack {
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 100ms;
+}
+
+.stakeholder__arrowBack:hover {
+    background-color: #d1d1d1;
+    scale: 1.1;
+}
+
+.stakeholder__request--text {
+    font-size: 19px;
+    color: #29ABE2;
+}
+
+.stakeholder__request--number {
+    font-weight: 700;
+}
+
+.stakeholder__overview {
+    padding: 0 78px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+.stakeholder__overview--headline {
+    font-size: 64px;
+    font-weight: 700;
+    color: #2A3647;
+    padding-bottom: 48px;
+}
+
+.stakeholder__info {
+    padding-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 48px;
+}
+
+.stakeholder__info--content {
+    color: #42526E;
+    max-width: 500px;
+}
+
+.stakeholder__info--headline {
+    font-size: 28px;
+    font-weight: 400;
+    padding-bottom: 40px;
+}
+
+.stakeholder__info--text {
+    font-size: 19px;
+}
+
+.stakeholder__info--padding {
+    padding-bottom: 20px;
+}
+
+.stakeholder__info--img {
+    height: 280px;
+}
+
+.stakeholder__button {
+    font-size: 23px;
+    color: #fff;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-start;
+    gap: 4px;
+    background-color: #29ABE2;
+    border-radius: 10px;
+}
+
+.stakeholder__button:hover {
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+    background-color: #2a3647;
+}
+
+.stakeholder__button:active {
+    background-color: #091931;
+}
+
+.stakeholder__legalInformation {
+    max-width: 1440px;
+}
