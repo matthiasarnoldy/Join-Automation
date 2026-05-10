@@ -26,14 +26,19 @@ window.prepareLoginLegalNavigation = prepareLoginLegalNavigation;
 function transformNavbarForLogin() {
     const urlParams = new URLSearchParams(window.location.search);
     const from = urlParams.get("from");
-    if (from === "login" || from === "signup") {
+    if (from === "login" || from === "signup" || from === "landing") {
         const isFromSignup = from === "signup";
+        const isFromLanding = from === "landing";
         const previousPage = isFromSignup
             ? "./signup.html"
-            : isInTemplates
-                ? "../index.html"
-                : "./index.html";
-        const buttonText = isFromSignup ? "Sign up" : "Log in";
+            : isFromLanding
+                ? isInTemplates
+                    ? "../index.html"
+                    : "./index.html"
+                : isInTemplates
+                    ? "./login.html"
+                    : "./templates/login.html";
+        const buttonText = isFromSignup ? "Sign up" : isFromLanding ? "Back" : "Log in";
         replaceNavMenuWithBackButton(buttonText, previousPage);
         hideHeaderElements();
         centerHeaderContent();

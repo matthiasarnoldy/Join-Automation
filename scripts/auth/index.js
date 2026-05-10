@@ -15,7 +15,6 @@ function assetPath(relativePath) {
     return `${ASSET_BASE_PATH}${relativePath}`;
 }
 
-
 /**
  * Returns the page path.
  *
@@ -26,7 +25,6 @@ function pagePath(pageFile) {
     return `${INDEX_PAGE_BASE_PATH}${pageFile}`;
 }
 
-
 /**
  * Initializes the login.
  * @returns {void} Nothing.
@@ -34,15 +32,47 @@ function pagePath(pageFile) {
 function initLogin() {
     setSplashLogoByViewport();
     setMobileSplashBackground();
+    syncWelcomeWindowWidthToButtonArea();
     setMainOpacity();
-    setupSignupFormValidation();
-    hideLoginError();
-    hideSignupError();
+    if (typeof setupSignupFormValidation === "function") setupSignupFormValidation();
+    if (typeof hideLoginError === "function") hideLoginError();
+    if (typeof hideSignupError === "function") hideSignupError();
     setupPasswordVisibility();
-    setupLoginButtons();
-    bindLoginErrorHideOnInput();
+    if (typeof setupLoginButtons === "function") setupLoginButtons();
+    if (typeof bindLoginErrorHideOnInput === "function") bindLoginErrorHideOnInput();
 }
 
+/**
+ * Syncs the welcome window width to button area width.
+ * @returns {void} Nothing.
+ */
+function syncWelcomeWindowWidthToButtonArea() {
+    const welcomeWindow = document.querySelector(".welcome__window");
+    const buttonArea = document.querySelector(".welcome__buttonArea");
+    const applyWidth = () => applyWelcomeWindowWidth(welcomeWindow, buttonArea);
+    requestAnimationFrame(applyWidth);
+    window.addEventListener("load", applyWidth);
+    window.addEventListener("resize", applyWidth);
+}
+
+/**
+ * Applies the computed welcome window width from button area.
+ *
+ * @param {HTMLElement|null} welcomeWindow - The welcome window.
+ * @param {HTMLElement|null} buttonArea - The button area.
+ * @returns {void} Nothing.
+ */
+function applyWelcomeWindowWidth(welcomeWindow, buttonArea) {
+    if (window.matchMedia("(max-width: 600px)").matches) {
+        welcomeWindow.style.removeProperty("width");
+        return;
+    }
+    const styles = getComputedStyle(welcomeWindow);
+    const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+    const paddingRight = parseFloat(styles.paddingRight) || 0;
+    const targetWidth = Math.ceil(buttonArea.scrollWidth + paddingLeft + paddingRight);
+    welcomeWindow.style.width = `${targetWidth}px`;
+}
 
 /**
  * Returns the auth base URL.
@@ -51,7 +81,6 @@ function initLogin() {
 function getAuthBaseUrl() {
     return (window.JOIN_CONFIG && window.JOIN_CONFIG.BASE_URL) || "";
 }
-
 
 /**
  * Checks whether the valid email is address.
@@ -64,7 +93,6 @@ function isValidEmailAddress(email) {
     return emailPattern.test(email);
 }
 
-
 /**
  * Returns the users from database.
  * @returns {Promise<Array<object>>} A promise that resolves to the users from database list.
@@ -74,7 +102,6 @@ async function getUsersFromDatabase() {
     if (!response.ok) throw new Error(`Failed loading users: HTTP ${response.status}`);
     return (await response.json()) || {};
 }
-
 
 /**
  * Checks whether the email already is registered.
@@ -89,7 +116,6 @@ function isEmailAlreadyRegistered(usersObject, email) {
     });
 }
 
-
 /**
  * Returns the pad to two digits.
  *
@@ -99,7 +125,6 @@ function isEmailAlreadyRegistered(usersObject, email) {
 function padToTwoDigits(value) {
     return String(value).padStart(2, "0");
 }
-
 
 /**
  * Formats the german timestamp.
@@ -117,7 +142,6 @@ function formatGermanTimestamp(date) {
     return `${day}${month}${year}${hour}${minute}${second}`;
 }
 
-
 /**
  * Returns the splash logo element.
  * @returns {HTMLElement|null} The splash logo element element, or null when it is not available.
@@ -126,7 +150,6 @@ function getSplashLogoElement() {
     return document.querySelector(".splash__logo--image");
 }
 
-
 /**
  * Checks whether the viewport is mobile.
  * @returns {boolean} Whether the viewport is mobile.
@@ -134,7 +157,6 @@ function getSplashLogoElement() {
 function isMobileViewport() {
     return window.matchMedia("(max-width: 600px)").matches;
 }
-
 
 /**
  * Sets the splash logo by viewport.
@@ -148,7 +170,6 @@ function setSplashLogoByViewport() {
         : assetPath("icons/desktop/Dark_Logo.svg");
 }
 
-
 /**
  * Returns the mobile splash elements.
  * @returns {object} The mobile splash elements object.
@@ -160,7 +181,6 @@ function getMobileSplashElements() {
     };
 }
 
-
 /**
  * Checks whether the mobile splash should apply.
  *
@@ -171,22 +191,6 @@ function shouldApplyMobileSplash(splash) {
     return Boolean(splash) && isMobileViewport();
 }
 
-
-/**
- * Builds the splash background reset.
- *
- * @param {*} originalBg - The original bg.
- * @param {*} splashLogo - The splash logo.
- * @returns {*} The splash background reset result.
- */
-function buildSplashBackgroundReset(originalBg, splashLogo) {
-    return () => {
-        document.body.style.backgroundColor = originalBg;
-        if (splashLogo) splashLogo.src = assetPath("icons/desktop/Dark_Logo.svg");
-    };
-}
-
-
 /**
  * Sets the mobile splash background.
  * @returns {void} Nothing.
@@ -195,12 +199,8 @@ function setMobileSplashBackground() {
     const { splash, splashLogo } = getMobileSplashElements();
     if (!shouldApplyMobileSplash(splash)) return;
     const originalBg = getComputedStyle(document.body).backgroundColor;
-    const resetBg = buildSplashBackgroundReset(originalBg, splashLogo);
     document.body.style.backgroundColor = "#2a3647";
-    splash.addEventListener("animationend", resetBg, { once: true });
-    setTimeout(resetBg, 700);
 }
-
 
 /**
  * Sets the main opacity.
@@ -208,12 +208,23 @@ function setMobileSplashBackground() {
  */
 function setMainOpacity() {
     const mainContent = document.getElementById("main-content");
+    const splash = document.querySelector(".splash__logo");
     if (!mainContent) return;
+    const shouldSkipSplash = document.body?.dataset?.skipSplash === "true";
+    const isLandingPage = Boolean(document.querySelector(".welcome__window"));
+    if (shouldSkipSplash) {
+        mainContent.classList.add("main-content--opacity");
+        return;
+    }
     setTimeout(() => {
         mainContent.classList.add("main-content--opacity");
+        if (isLandingPage) document.body.classList.add("landing-bg-visible");
+        if (isLandingPage && splash) {
+            const keepCornerLogoVisible = window.matchMedia("(max-width: 600px)").matches;
+            splash.style.display = keepCornerLogoVisible ? "" : "none";
+        }
     }, 700);
 }
-
 
 /**
  * Sets up the password visibility.
@@ -223,7 +234,6 @@ function setupPasswordVisibility() {
     const passwordFields = getPasswordFields();
     passwordFields.forEach((field) => setupPasswordField(field));
 }
-
 
 /**
  * Returns the password field by icon ID.
@@ -238,7 +248,6 @@ function getPasswordFieldByIconId(iconId) {
     return input ? { input, icon } : null;
 }
 
-
 /**
  * Returns the password fields.
  * @returns {Array<*>} The password fields list.
@@ -248,7 +257,6 @@ function getPasswordFields() {
     const confirmField = getPasswordFieldByIconId("confirm-password-icon");
     return [passwordField, confirmField].filter(Boolean);
 }
-
 
 /**
  * Sets up the password field.
@@ -263,7 +271,6 @@ function setupPasswordField(field) {
     field.icon.addEventListener("click", () => togglePasswordVisibility(field));
 }
 
-
 /**
  * Shows the visibility icon.
  *
@@ -275,7 +282,6 @@ function showVisibilityIcon(field) {
     field.icon.src = assetPath("icons/desktop/visibility_off.svg");
     field.icon.style.cursor = "pointer";
 }
-
 
 /**
  * Hides the visibility icon.
@@ -289,7 +295,6 @@ function hideVisibilityIcon(field) {
     field.icon.style.cursor = "default";
 }
 
-
 /**
  * Checks whether the icon is lock.
  *
@@ -299,7 +304,6 @@ function hideVisibilityIcon(field) {
 function isLockIcon(field) {
     return field.icon.src.includes("lock.svg");
 }
-
 
 /**
  * Shows the password.
@@ -312,7 +316,6 @@ function showPassword(field) {
     field.icon.src = assetPath("icons/desktop/visibility.svg");
 }
 
-
 /**
  * Hides the password.
  *
@@ -323,7 +326,6 @@ function hidePassword(field) {
     field.input.type = "password";
     field.icon.src = assetPath("icons/desktop/visibility_off.svg");
 }
-
 
 /**
  * Toggles the password visibility.
@@ -338,7 +340,6 @@ function togglePasswordVisibility(field) {
     field.input.focus();
 }
 
-
 /**
  * Sets the button disabled.
  *
@@ -351,7 +352,6 @@ function setButtonDisabled(button, disabled) {
     button.disabled = disabled;
 }
 
-
 /**
  * Builds the summary path with user ID.
  *
@@ -363,7 +363,6 @@ function buildSummaryPathWithUserId(userId) {
     const query = `${AUTH_USER_QUERY_KEY}=${encodeURIComponent(userId)}`;
     return `${pagePath("summary.html")}?${query}`;
 }
-
 
 /**
  * Redirects the to summary.

@@ -1,0 +1,202 @@
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-color: #2a3647;
+    opacity: 0;
+    transition: opacity 500ms ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.landing-bg-visible::before {
+    opacity: 1;
+}
+
+#main-content {
+    z-index: 1;
+}
+
+main {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.welcome__window {
+    max-width: calc(100% - 32px);
+    padding: 56px 72px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 56px;
+    text-align: start;
+    background-color: #fff;
+    box-shadow: 0 0 10px #00000014;
+}
+
+.welcome__headline {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.welcome__headline--wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.welcome__headline--wrapper h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2A3647;
+}
+
+.welcome__headline p {
+    font-size: 23px;
+    color: #2A3647;
+    line-height: 1.2;
+    max-width: 48ch;
+    margin: 0 auto;
+}
+
+.welcome__buttonArea {
+    width: max-content;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 64px;
+}
+
+.welcome__button--wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.welcome__buttonArea--text {
+    font-size: 23px;
+    color: #2A3647;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.welcome__buttonArea--text p {
+    white-space: nowrap;
+}
+
+.welcome__buttonLink {
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 100ms ease-in-out;
+}
+
+.welcome__buttonLink--stakeholder {
+    font-size: 23px;
+    color: #fff;
+    padding: 10px 18px;
+    background-color: #29ABE2;
+}
+
+.welcome__buttonLink--stakeholder:hover {
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+    background-color: #2a3647;
+}
+
+.welcome__buttonLink--stakeholder:active {
+    background-color: #091931;
+}
+
+.welcome__buttonLink--member {
+    font-size: 19px;
+    color: #2A3647;
+    padding: 12px 18px;
+    background-color: #fff;
+    border: 1px solid #2A3647;
+}
+
+.welcome__buttonLink--member:hover {
+    color: #29ABE2;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+    border: 1px solid #29ABE2;
+}
+
+.welcome__buttonLink--member:active {
+    color: #091931;
+    border: 1px solid #091931;
+}
+
+.welcome__signup {
+    color: #fff;
+    width: 100%;
+    padding: 16px 0;
+    display: none;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.welcome__button {
+    font-size: 19px;
+    color: #fff;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.welcome__legalInformation {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .welcome__buttonArea {
+        flex-direction: column;
+        gap: 70px;
+    }
+
+    .welcome__button--wrapper {
+        align-items: center;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .welcome__window {
+        width: calc(100% - 32px);
+        padding: 64px 16px;
+    }
+
+    .welcome__headline {
+        gap: 24px;
+    }
+
+    .welcome__headline h1 {
+        font-size: 40px;
+    }
+
+    .welcome__headline p {
+        font-size: 16px;
+    }
+
+    .welcome__buttonArea--text {
+        font-size: 18px;
+    }
+
+    .welcome__signup {
+        display: flex;
+    }
+
+    .welcome__legalInformation {
+        display: flex;
+    }
+}
