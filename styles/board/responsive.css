@@ -25,7 +25,7 @@
    }
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1190px) {
    .board-column__title {
       font-size: 27px;
    }

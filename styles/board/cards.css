@@ -76,6 +76,8 @@
    color: #a8a8a8;
    height: 38px;
    margin-bottom: 16px;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 
 .task-card__progress {
@@ -122,6 +124,7 @@
    display: flex;
    justify-content: flex-start;
    align-items: center;
+   max-width: 130px;
 }
 
 .avatar {
@@ -136,6 +139,10 @@
    align-items: center;
    border: 2px solid #ffffff;
    border-radius: 50%;
+}
+
+.avatar:nth-child(n+6) {
+   display: none;
 }
 
 .avatar:first-child {
