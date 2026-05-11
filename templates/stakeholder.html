@@ -8,7 +8,8 @@
 
     <link rel="icon" href="../assets/icons/desktop/logoFavicon.svg" type="image/svg+xml"
         media="(prefers-color-scheme: light)" />
-    <link rel="icon" href="../assets/icons/desktop/logo.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="../assets/icons/desktop/logo.svg" type="image/svg+xml"
+        media="(prefers-color-scheme: dark)" />
 
     <script src="../scripts/template.js"></script>
     <script src="../scripts/legalInformation.js"></script>
@@ -28,7 +29,12 @@
 </head>
 
 <body class="stakeholder">
+    <img src="../assets/icons/desktop/Dark_Logo.svg" alt="" class="stakeholder__logo">
     <main class="stakeholder__content">
+        <div class="stakeholder__header--mobile">
+            <h1 class="stakeholder__headline--mobile">Welcome</h1>
+            <img class="stakeholder__arrowBack" src="../assets/icons/desktop/arrowBack.svg" alt="">
+        </div>
         <div class="stakeholder__request">
             <img class="stakeholder__arrowBack" src="../assets/icons/desktop/arrowBack.svg" alt="">
             <p class="stakeholder__request--text">
@@ -42,13 +48,28 @@
             <h1 class="stakeholder__overview--headline">Welcome</h1>
             <div class="stakeholder__info">
                 <div class="stakeholder__info--content">
-                    <h2 class="stakeholder__info--headline">Easily create a ticket by sending an email — no extra steps needed.</h2>
-                    <p class="stakeholder__info--text stakeholder__info--padding">On this platform, you can submit your feature requests via email. Our AI system will automatically generate a ticket with a deadline and priority level.</p>
-                    <p class="stakeholder__info--text">A total of 10 requests can be created per day. After this limit, emails can still be sent, but they will be manually reviewed by our team instead of generating AI tickets.</p>
+                    <h2 class="stakeholder__info--headline">Easily create a ticket by sending an email — no extra steps
+                        needed.</h2>
+                    <p class="stakeholder__limit--headline" style="display:none;">The daily 10-request limit has been
+                        reached!</p>
+                    <img class="stakeholder__info--img stakeholder__info--imgMobile" src="../assets/icons/desktop/stakeholderImg.png" alt="">
+                    <p class="stakeholder__info--text stakeholder__info--padding">On this platform, you can submit your
+                        feature requests via email. Our AI system will automatically generate a ticket with a deadline
+                        and priority level.</p>
+                    <p class="stakeholder__info--text">A total of 10 requests can be created per day. After this limit,
+                        emails can still be sent, but they will be manually reviewed by our team instead of generating
+                        AI tickets.</p>
+                    <a id="stakeholder__button--limit" class="stakeholder__button stakeholder__button--limit"
+                        style="display:none;"
+                        href="mailto:matthiasarnoldy20002@gmail.com?subject=Email%20Request&body=Title%3A%20%0A%0ADescription%3A%20%0A%0ADue%20date%3A%20%0A%0APriority%3A%20%0A%0ACategory%20%28Technical%20task%20or%20User%20Story%29%3A%20%0A%0ASubtasks%3A%20">
+                        <span>Send an email</span>
+                        <img src="../assets/icons/desktop/stakeholder__check.svg" alt="">
+                    </a>
                 </div>
                 <img class="stakeholder__info--img" src="../assets/icons/desktop/stakeholderImg.png" alt="">
             </div>
-            <a class="stakeholder__button" href="mailto:matthiasarnoldy20002@gmail.com?subject=Email%20Request&body=Title%3A%20%0A%0ADescription%3A%20%0A%0ADue%20date%3A%20%0A%0APriority%3A%20%0A%0ACategory%20%28Technical%20task%20or%20User%20Story%29%3A%20%0A%0ASubtasks%3A%20">
+            <a id="stakeholder__button--default" class="stakeholder__button"
+                href="mailto:matthiasarnoldy20002@gmail.com?subject=Email%20Request&body=Title%3A%20%0A%0ADescription%3A%20%0A%0ADue%20date%3A%20%0A%0APriority%3A%20%0A%0ACategory%20%28Technical%20task%20or%20User%20Story%29%3A%20%0A%0ASubtasks%3A%20">
                 <span>Create Email Request</span>
                 <img src="../assets/icons/desktop/stakeholder__check.svg" alt="">
             </a>

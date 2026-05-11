@@ -12,7 +12,7 @@
    }
 
    .urgent__priority {
-      gap: 14px;
+      gap: 6px;
    }
 
    .summary__tasks {
@@ -99,6 +99,10 @@
       gap: 16px;
    }
 
+   .tasks__card {
+      max-width: 31.6%;
+   }
+
    .summary__card:hover {
       transform: scaleX(1.02) scaleY(1.04);
    }
@@ -112,11 +116,20 @@
    }
 
    .summary__urgent {
-      gap: 40px;
+      gap: 6px;
+   }
+
+   .urgent__priority {
+      gap: 0;
    }
 
    .urgent__dividingLine {
       height: 80px;
+   }
+
+   .urgent__date {
+      width: min-content;
+      gap: 8px;
    }
 
    .summary__text {
@@ -166,7 +179,7 @@
    }
 
    .summary__urgent {
-      gap: 8px;
+      gap: 4px;
    }
 
    .urgent__dividingLine {

@@ -103,6 +103,13 @@
    font-weight: 600;
 }
 
+.summary__number--gradient {
+   background: linear-gradient(to bottom, #8933FC, #29ABE2);
+   -webkit-background-clip: text;
+   background-clip: text;
+   -webkit-text-fill-color: transparent;
+}
+
 .summary__text {
    font-size: 20px;
    font-weight: 400;
@@ -128,14 +135,14 @@
    justify-content: center;
    align-items: center;
    flex: 1;
-   gap: 61px;
+   gap: 30px;
 }
 
 .urgent__priority {
    display: flex;
    justify-content: center;
    align-items: center;
-   gap: 18px;
+   gap: 8px;
 }
 
 .urgent__icon {
@@ -166,7 +173,7 @@
 }
 
 .date__number {
-   font-size: 21px;
+   font-size: 20px;
    font-weight: 700;
 }
 
@@ -182,6 +189,7 @@
 }
 
 .tasks__card {
+   max-width: 172px;
    text-align: center;
    justify-content: center;
    align-items: center;
