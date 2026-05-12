@@ -168,6 +168,18 @@ function getCategoryInputValue() {
 
 
 /**
+ * Returns the created by name for current user.
+ * @returns {string} The creator name.
+ */
+function getCreatedByName() {
+   const uid = getSaveTaskAuthUserIdFromUrl();
+   if (!uid) return "Unknown";
+   if (uid.toLowerCase().includes("guest")) return "Guest";
+   return uid;
+}
+
+
+/**
  * Returns the basic inputs.
  * @returns {object} The basic inputs object.
  */
@@ -196,6 +208,8 @@ function createTaskData(existingId = null) {
       assigned: getSelectedContacts(),
       subtasks: getSubtasksList(),
       status: getDialogStatus(),
+      createdByName: getCreatedByName(),
+      createdBySource: "member",
    };
 }
 

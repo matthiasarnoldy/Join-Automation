@@ -75,6 +75,36 @@
    color: #2a3647;
 }
 
+.task-detail__creator--wrapper {
+   width: 100%;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.task-detail__creator {
+   font-size: 16px;
+   font-weight: 400;
+   color: #0B3681;
+   width: fit-content;
+   padding: 4px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: 4px;
+   border-radius: 4px;
+}
+
+.task-detail__creator--member {
+   margin-bottom: -12px;
+   background-color: #92FFBC;
+}
+
+.task-detail__creator--extern {
+   margin-bottom: -12px;
+   background-color: #EBFC88;
+}
+
 .task-detail__field {
    display: flex;
    align-items: center;

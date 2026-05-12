@@ -31,6 +31,34 @@
    }
 
    /**
+    * Sets the task detail creator.
+    *
+    * @param {string} createdByName - The creator name.
+    * @param {string} createdBySource - The creator source ("member" or "extern").
+    * @returns {void} Nothing.
+    */
+   function setTaskDetailCreatorBadges(isExtern) {
+      const icon = document.getElementById("taskDetailSourceIcon");
+      const text = document.getElementById("taskDetailSourceText");
+      const badge = document.getElementById("taskDetailSourceBadge");
+      const profileIcon = document.getElementById("taskDetailProfileIcon");
+      const profileText = document.getElementById("taskDetailProfileText");
+      if (icon) icon.src = isExtern ? "../assets/icons/desktop/board__extern.svg" : "../assets/icons/desktop/board__member.svg";
+      if (text) text.textContent = isExtern ? "Extern" : "Member";
+      if (badge) {
+         badge.classList.toggle("task-detail__creator--member", !isExtern);
+         badge.classList.toggle("task-detail__creator--extern", isExtern);
+      }
+      if (profileIcon) profileIcon.src = isExtern ? "../assets/icons/desktop/board__attachemail.svg" : "../assets/icons/desktop/board__profile.svg";
+      if (profileText) profileText.textContent = isExtern ? "E-mail" : "Profile";
+   }
+
+   function setTaskDetailCreator(createdByName, createdBySource) {
+      setTaskDetailText("taskDetailCreator", createdByName || "Unknown", "Unknown");
+      setTaskDetailCreatorBadges(createdBySource === "extern");
+   }
+
+   /**
     * Sets the task detail priority.
     *
     * @param {string} priority - The task priority.
@@ -170,6 +198,7 @@
       setTaskDetailText("taskDetailDescription", taskData.description, "No description");
       setTaskDetailText("taskDetailDate", taskData.date, "No due date");
       setTaskDetailPriority(taskData.priority);
+      setTaskDetailCreator(taskData.createdByName, taskData.createdBySource);
       renderTaskDetailAssigned(taskData.assigned || []);
       renderTaskDetailSubtasks(taskData.subtasks || []);
    }
