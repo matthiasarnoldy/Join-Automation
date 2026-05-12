@@ -54,6 +54,21 @@
    background: #eeeeee;
 }
 
+.task-detail__ai {
+   padding: 8px 24px 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: flex-start;
+   gap: 8px;
+}
+
+.task-detail__ai--text {
+   background: linear-gradient(to right, #8933FC, #29ABE2);
+   -webkit-background-clip: text;
+   background-clip: text;
+   -webkit-text-fill-color: transparent;
+}
+
 .task-detail__content {
    display: flex;
    flex-direction: column;
@@ -80,6 +95,7 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
+   flex-wrap: wrap;
 }
 
 .task-detail__creator {
@@ -109,6 +125,10 @@
    display: flex;
    align-items: center;
    gap: 24px;
+}
+
+.creator__field {
+   align-items: flex-start;
 }
 
 .task-detail__field-label {

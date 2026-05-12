@@ -31,28 +31,50 @@
    }
 
    /**
-    * Sets the task detail creator.
+    * Applies source-specific UI state to task detail badges.
     *
-    * @param {string} createdByName - The creator name.
-    * @param {string} createdBySource - The creator source ("member" or "extern").
+    * @param {object} elements - The badge and profile elements.
+    * @param {boolean} isExtern - True if task source is extern.
     * @returns {void} Nothing.
     */
-   function setTaskDetailCreatorBadges(isExtern) {
-      const icon = document.getElementById("taskDetailSourceIcon");
-      const text = document.getElementById("taskDetailSourceText");
-      const badge = document.getElementById("taskDetailSourceBadge");
-      const profileIcon = document.getElementById("taskDetailProfileIcon");
-      const profileText = document.getElementById("taskDetailProfileText");
+   function applyTaskDetailSourceUi(elements, isExtern) {
+      const {icon, text, badge, aiBadge, profileIcon, profileText} = elements;
       if (icon) icon.src = isExtern ? "../assets/icons/desktop/board__extern.svg" : "../assets/icons/desktop/board__member.svg";
       if (text) text.textContent = isExtern ? "Extern" : "Member";
       if (badge) {
          badge.classList.toggle("task-detail__creator--member", !isExtern);
          badge.classList.toggle("task-detail__creator--extern", isExtern);
       }
+      if (aiBadge) aiBadge.style.display = isExtern ? "inline-flex" : "none";
       if (profileIcon) profileIcon.src = isExtern ? "../assets/icons/desktop/board__attachemail.svg" : "../assets/icons/desktop/board__profile.svg";
       if (profileText) profileText.textContent = isExtern ? "E-mail" : "Profile";
    }
 
+   /**
+    * Applies source-specific badges in task detail.
+    *
+    * @param {boolean} isExtern - True if task source is extern.
+    * @returns {void} Nothing.
+    */
+   function setTaskDetailCreatorBadges(isExtern) {
+      const icon = document.getElementById("taskDetailSourceIcon");
+      const text = document.getElementById("taskDetailSourceText");
+      const badge = document.getElementById("taskDetailSourceBadge");
+      const aiBadge = document.getElementById("taskDetailAiBadge");
+      const profileIcon = document.getElementById("taskDetailProfileIcon");
+      const profileText = document.getElementById("taskDetailProfileText");
+      applyTaskDetailSourceUi(
+         {icon, text, badge, aiBadge, profileIcon, profileText}, isExtern
+      );
+   }
+
+   /**
+    * Sets the creator name and source-dependent creator badges.
+    *
+    * @param {string} createdByName - The creator name.
+    * @param {string} createdBySource - The creator source ("member" or "extern").
+    * @returns {void} Nothing.
+    */
    function setTaskDetailCreator(createdByName, createdBySource) {
       setTaskDetailText("taskDetailCreator", createdByName || "Unknown", "Unknown");
       setTaskDetailCreatorBadges(createdBySource === "extern");
