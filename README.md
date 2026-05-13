@@ -58,6 +58,42 @@ Once a task is completed, you can either:
 
 Remember that using **Join** effectively requires consistent updates from you and your team to ensure the board reflects the current state of your project.
 
+## 📩 n8n Request Workflow
+
+External requests are processed through an automated **n8n** workflow before they appear on the board. The workflow listens to incoming messages, checks the daily request limit, and then creates or rejects the task depending on the result.
+
+### Workflow Overview
+
+1. **IMAP Trigger**
+  - Watches the request mailbox for new incoming emails.
+  - The incoming message is used as the workflow input.
+
+2. **Daily Limit Check**
+  - Calculates the current day key in the `Europe/Berlin` time zone.
+  - Loads the current daily counter from Firebase.
+  - If the limit is reached, the workflow sends a limit reply and moves the message out of the inbox.
+
+3. **AI Analysis**
+  - The email content is sent to the AI agent.
+  - The agent checks whether the message is a real task request.
+  - If the request is not valid, the workflow sends a rejection email and archives the message.
+
+4. **Task Creation Path**
+  - Valid requests are normalized into a task payload.
+  - The task is stored in Firebase with the status `triage`.
+  - The daily counter is increased.
+  - A success reply is sent back to the sender.
+  - The message is moved from **Inbox** to **In progress** and then the **Inbox** label is removed.
+
+5. **Retry and Error Handling**
+  - Failed AI attempts are retried up to the configured retry count.
+  - After the final retry, the workflow sends an error reply.
+  - The message is then moved to **In progress** and removed from **Inbox**.
+
+### External Task Status Updates
+
+When an externally created task is moved on the board, a webhook can notify the original sender about the new status. The webhook URL is configured in `script.js` and is used by the board to inform the n8n workflow about status changes such as moving a task to **To do**, **In progress**, **Await feedback**, or **Done**.
+
 ## ❓ Questions?
 
 Have more questions about **Join**? Feel free to contact us at m.arnoldy@outlook.de. We're here to help you!
