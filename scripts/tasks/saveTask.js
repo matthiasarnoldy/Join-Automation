@@ -202,14 +202,15 @@ function getBasicInputs() {
  */
 function createTaskData(existingId = null) {
    const basicInputs = getBasicInputs();
+   const existingTask = existingId ? window.BoardData?.getTask?.(existingId) : null;
    return {
       id: existingId || Date.now(),
       ...basicInputs,
       assigned: getSelectedContacts(),
       subtasks: getSubtasksList(),
       status: getDialogStatus(),
-      createdByName: getCreatedByName(),
-      createdBySource: "member",
+      createdByName: existingTask?.createdByName || getCreatedByName(),
+      createdBySource: existingTask?.createdBySource || "intern",
    };
 }
 
