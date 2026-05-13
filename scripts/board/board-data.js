@@ -173,6 +173,61 @@
    }
 
    /**
+    * Returns whether one value is a valid email address.
+    *
+    * @param {*} value - The candidate value.
+    * @returns {boolean} Whether the value is a valid email address.
+    */
+   function isValidEmailAddress(value) {
+      const email = String(value || "").trim();
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+   }
+
+   /**
+    * Returns whether the task was created by an external sender.
+    *
+    * @param {object} task - The task data.
+    * @returns {boolean} Whether the task is external.
+    */
+   function isExternalTask(task) {
+      return String(task?.createdBySource || "").toLowerCase() === "extern";
+   }
+
+   /**
+    * Returns the optional external task status webhook URL.
+    *
+    * @returns {string} The webhook URL or an empty string.
+    */
+   function getExternTaskStatusWebhookUrl() {
+      return String(window.JOIN_CONFIG?.EXTERN_TASK_STATUS_WEBHOOK_URL || "").trim();
+   }
+
+   /**
+    * Sends a status-change webhook for external tasks.
+    *
+    * @param {object} task - The updated task data.
+    * @param {string} previousStatus - The previous status.
+    * @param {string} nextStatus - The next status.
+    * @returns {Promise<void>} A promise that resolves when the webhook call completes.
+    */
+   async function notifyExternTaskStatusChange(task, previousStatus, nextStatus) {
+      const webhookUrl = getExternTaskStatusWebhookUrl();
+      if (!webhookUrl) return;
+      const recipientEmail = String(task?.createdByName || "").trim();
+      if (!isValidEmailAddress(recipientEmail)) return;
+      const payload = {
+         eventType: "extern-task-status-changed",
+         taskId: String(task?.id || ""), title: String(task?.title || ""),
+         recipientEmail, fromStatus: String(previousStatus || ""), toStatus: String(nextStatus || ""), movedAt: new Date().toISOString(),
+      };
+      const response = await fetch(webhookUrl, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(payload),
+      });
+   }
+
+   /**
     * Deletes the task.
     *
     * @param {string|number} taskId - The task ID.
@@ -196,9 +251,16 @@
    async function updateTaskStatus(taskId, newStatus) {
       const currentTask = tasksById[String(taskId)];
       if (!taskId || !newStatus || !currentTask) return;
+      const previousStatus = String(currentTask.status || "");
+      const nextStatus = String(newStatus || "");
+      if (previousStatus === nextStatus) return;
       const updatedTask = { ...currentTask, id: currentTask.id ?? taskId, status: newStatus };
       await putTask(taskId, updatedTask);
       tasksById[String(taskId)] = updatedTask;
+      if (!isExternalTask(updatedTask)) return;
+      try {
+         await notifyExternTaskStatusChange(updatedTask, previousStatus, nextStatus);
+      } catch (error) {}
    }
 
    /**

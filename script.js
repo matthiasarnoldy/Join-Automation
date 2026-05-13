@@ -9,6 +9,7 @@ document.documentElement.classList.add("app-loading");
 
 window.JOIN_CONFIG = window.JOIN_CONFIG || {};
 window.JOIN_CONFIG.BASE_URL = window.JOIN_CONFIG.BASE_URL || DEFAULT_BASE_URL;
+window.JOIN_CONFIG.EXTERN_TASK_STATUS_WEBHOOK_URL = window.JOIN_CONFIG.EXTERN_TASK_STATUS_WEBHOOK_URL || "https://joinemailrequest.app.n8n.cloud/webhook/extern-task-status-changed";
 
 const UI_IDS = {
    navSummary: "nav-summary",
