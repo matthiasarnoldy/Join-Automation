@@ -220,6 +220,7 @@ async function loadSummaryData() {
     updateTasksInProgressCount(tasks);
     updateAwaitingFeedbackCount(tasks);
     updateUrgentCount(tasks);
+    updateEmailRequestCount(tasks);
     updateUpcomingDeadline(tasks);
 }
 
@@ -320,6 +321,19 @@ function updateUrgentCount(tasks) {
     const urgentCount = tasks.filter(task => task.priority === "urgent").length;
     const urgentElement = document.getElementById("urgentCount");
     if (urgentElement) urgentElement.textContent = urgentCount;
+}
+
+
+/**
+ * Updates the email request count with triage tasks.
+ *
+ * @param {Array<object>} tasks - The tasks list.
+ * @returns {void} Nothing.
+ */
+function updateEmailRequestCount(tasks) {
+    const triageCount = tasks.filter(task => task.status === "triage").length;
+    const emailRequestElement = document.getElementById("emailRequestCount");
+    if (emailRequestElement) emailRequestElement.textContent = triageCount;
 }
 
 
