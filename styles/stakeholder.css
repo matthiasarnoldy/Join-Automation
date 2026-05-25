@@ -1,7 +1,7 @@
 html {
     display: flex;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
     background-color: #F6F7F8;
 }
@@ -154,6 +154,12 @@ html {
 
 .stakeholder__legalInformation {
     max-width: 1440px;
+}
+
+@media (min-width: 1440px) {
+    .stakeholder__logo {
+        left: calc((100vw - 1440px) / 2);
+    }
 }
 
 @media (max-width: 1200px) {
