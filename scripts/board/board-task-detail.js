@@ -27,12 +27,12 @@
     * @param {string|number} taskId - The task ID.
     * @returns {void} Nothing.
     */
-   function openTaskDetail(taskId) {
+   async function openTaskDetail(taskId) {
       const dialog = getTaskDetailDialog();
       const taskData = window.BoardData?.getTask(taskId);
       if (!dialog || !taskData) return;
       dialog.dataset.taskId = String(taskId);
-      window.BoardTaskDetailRender?.renderTaskDetail(taskData);
+      await window.BoardTaskDetailRender?.renderTaskDetail(taskData);
       dialog.showModal();
       window.updateBoardDialogScrollLock?.();
    }

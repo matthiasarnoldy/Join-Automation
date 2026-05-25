@@ -31,6 +31,22 @@
    }
 
    /**
+    * Checks whether a user exists based on the email address.
+   *
+   * @param {string} email - the email-adress.
+   * @returns {Promise<boolean>} True, if user exist.
+   */
+   async function isMemberByEmail(email) {
+      if (!email) return false;
+      const response = await fetch(`${window.JOIN_CONFIG.BASE_URL}users.json`);
+      const users = await response.json();
+      const usersArray = Object.values(users || {});
+      return usersArray.some(user =>
+         user.email?.toLowerCase() === email.toLowerCase()
+      );
+   }
+
+   /**
     * Applies source-specific UI state to task detail badges.
     *
     * @param {object} elements - The badge and profile elements.
@@ -38,7 +54,7 @@
     * @returns {void} Nothing.
     */
    function applyTaskDetailSourceUi(elements, isExtern) {
-      const {icon, text, badge, aiBadge, profileIcon, profileText} = elements;
+      const { icon, text, badge, aiBadge, profileIcon, profileText } = elements;
       if (icon) icon.src = isExtern ? "../assets/icons/desktop/board__extern.svg" : "../assets/icons/desktop/board__member.svg";
       if (text) text.textContent = isExtern ? "Extern" : "Member";
       if (badge) {
@@ -64,7 +80,7 @@
       const profileIcon = document.getElementById("taskDetailProfileIcon");
       const profileText = document.getElementById("taskDetailProfileText");
       applyTaskDetailSourceUi(
-         {icon, text, badge, aiBadge, profileIcon, profileText}, isExtern
+         { icon, text, badge, aiBadge, profileIcon, profileText }, isExtern
       );
    }
 
@@ -214,13 +230,17 @@
     * @param {object} taskData - The task data object.
     * @returns {void} Nothing.
     */
-   function renderTaskDetail(taskData) {
+   async function renderTaskDetail(taskData) {
       setTaskDetailLabel(taskData.category);
       setTaskDetailText("taskDetailTitle", taskData.title, "Untitled task");
       setTaskDetailText("taskDetailDescription", taskData.description, "No description");
       setTaskDetailText("taskDetailDate", taskData.date, "No due date");
       setTaskDetailPriority(taskData.priority);
-      setTaskDetailCreator(taskData.createdByName, taskData.createdBySource);
+      const isMember = await isMemberByEmail(taskData.createdByName);
+      setTaskDetailCreator(
+         taskData.createdByName,
+         isMember ? "member" : "extern"
+      );
       renderTaskDetailAssigned(taskData.assigned || []);
       renderTaskDetailSubtasks(taskData.subtasks || []);
    }
