@@ -8,14 +8,14 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        -2208,
-        640
+        -2416,
+        368
       ],
-      "id": "8d46f0fd-5b65-4438-a4f1-49aa42442817",
+      "id": "ecead752-afc0-4401-9436-448de8db7f74",
       "name": "joinemailrequest@gmail.com (IMAP)",
       "credentials": {
         "imap": {
-          "id": "EVpUHMOJSC9J6Ikt",
+          "id": "NQPRV4MgLman703E",
           "name": "IMAP account"
         }
       }
@@ -28,10 +28,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -1792,
-        640
+        -2000,
+        368
       ],
-      "id": "31a379bf-0e6a-4806-a893-2272ccf1f707",
+      "id": "383b89ec-7987-46d8-a5f5-6d2f10611945",
       "name": "HTTP Request getDayKey"
     },
     {
@@ -46,108 +46,29 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        416,
-        0
+        -1168,
+        352
       ],
-      "id": "4cadd267-0555-4783-b68c-b136c4d52222",
+      "id": "587e8cee-864b-4db7-b150-f75adba0e24d",
       "name": "HTTP Request setLimit"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Du bist ein Extraktions-Agent für eingehende E-Mails.\n\nDeine Aufgabe ist es, aus einer einzelnen E-Mail zu erkennen, ob sie einen verwertbaren Task für ein Kanban-System enthält.\n\nWICHTIG:\n- Antworte ausschließlich mit gültigem JSON.\n- Kein Fließtext, keine Erklärung, keine Markdown-Ausgabe.\n- Wenn ein Feld nicht sicher erkennbar ist, gib einen leeren String zurück.\n- Erfinde keine Informationen.\n- Das Datum muss in der Zukunft liegen.\n- Entscheide zuerst, ob die E-Mail überhaupt einen Task enthält.\n- Wenn die E-Mail kein Task ist, gib `isTask: false` zurück und lasse alle anderen Felder leer.\n- Wenn die E-Mail ein Task ist, gib `isTask: true` zurück und extrahiere die Felder.\n- Die Pflichtfelder `title`, `date` und `category` gelten nur dann, wenn `isTask` true ist.\n- Die Pflichtfelder müssen ausgefüllt sein, wenn kein Datum explizit angegeben, dann gebe bitte ein in der Zukunft liegendes Datum im Format dd/mm/yyyy an.\n- Wenn optionalen Feldern keine Infos zugeordnet werden können, gib auch dort einen leeren String oder ein leeres Array zurück.\n\nVerwende genau diese Struktur:\n\n{\n  \"isTask\": false,\n  \"title\": \"\",\n  \"date\": \"\",\n  \"category\": \"\",\n  \"description\": \"\",\n  \"priority\": \"\",\n  \"subtasks\": [],\n  \"createdByName\": \"\",\n  \"createdBySource\": \"extern\"\n}\n\nREGELN:\n- `createdBySource` ist immer `extern`\n- `createdByName` soll die E-Mail des Absenders sein, falls erkennbar, sonst leerer String\n- `title` ist Pflicht, wenn `isTask` true ist, und muss aus der E-Mail abgeleitet werden\n-`title` muss kurz und prägnant sein\n- `date` ist Pflicht, wenn `isTask` true ist, und muss im Format `dd/mm/yyyy` ausgegeben werden\n- `category` ist Pflicht, wenn `isTask` true ist, und darf nur `technical` oder `user-story` sein\n- `priority` darf nur `urgent`, `medium` oder `low` sein, sonst leerer String\n- `subtasks` ist ein Array von Strings\n- Wenn keine Beschreibung vorhanden ist, leerer String\n- Wenn keine Priorität vorhanden ist, leerer String\n- Wenn keine Subtasks vorhanden sind, leeres Array\n- Wenn die E-Mail Spam, Werbung, Newsletter, private Nachricht oder sonst kein klarer Arbeitsauftrag ist, dann ist `isTask` false\n- Wenn unklar ist, ob es wirklich ein Task ist, dann setze `isTask` auf false\n\nEINGABE:\nDu erhältst Absender, Betreff und E-Mail-Inhalt. Analysiere diese und entscheide, ob daraus ein Task erstellt werden soll.\n\nBitte verwende Folgendes als Quelle:\nAbsender: {{ $('joinemailrequest@gmail.com (IMAP)').item.json.from }}\nEmail Text: {{ $('joinemailrequest@gmail.com (IMAP)').item.json.textPlain }}\n\nAUSGABE:\nGib nur das JSON-Objekt zurück, nichts anderes.",
+        "text": "=You are a task extraction agent for incoming emails in a Kanban system.\n\n## YOUR ONLY JOB\nAnalyze the email below and return a single valid JSON object. Nothing else.\nNo explanations. No markdown. No wrapper keys. Just the raw JSON.\n\n## CRITICAL OUTPUT RULE\nYour response must start with { and end with }\nNEVER wrap the result in \"output\", \"result\", \"data\" or any other key.\nNEVER add text before or after the JSON.\n\n## TODAY'S DATE\n{{ $json.dayKey }}\nAll dates must be in the future. Format: dd/mm/yyyy\n\n## DECISION: IS THIS A TASK?\nSet \"isTask\": true if the email contains a clear work request or actionable item.\nSet \"isTask\": false for: spam, newsletters, ads, private messages, unclear content.\n\nIf \"isTask\" is false → leave all other fields empty.\n\n## JSON SCHEMA\n{\n  \"isTask\": false,\n  \"title\": \"\",\n  \"date\": \"\",\n  \"category\": \"\",\n  \"description\": \"\",\n  \"priority\": \"\",\n  \"subtasks\": [],\n  \"createdByName\": \"\",\n  \"createdBySource\": \"extern\"\n}\n\n## FIELD RULES\n- title: short and precise, derived from email content (required if isTask=true)\n- date: dd/mm/yyyy, must be in the future. If none given, set a reasonable future date (required if isTask=true)\n- category: ONLY \"technical\" or \"user-story\" (required if isTask=true)\n- priority: ONLY \"urgent\", \"medium\" or \"low\" — never anything else\n- description: brief summary of the task, \"\" if unclear\n- subtasks: array of strings, [] if none\n- createdByName: sender email address if recognizable, otherwise \"\"\n- createdBySource: always \"extern\"\n\n## INPUT\nSender: {{ $('joinemailrequest@gmail.com (IMAP)').item.json.from }}\nEmail: {{ $('joinemailrequest@gmail.com (IMAP)').item.json.textPlain }}\n\n## REMINDER\nRespond with ONLY the JSON object. First character: { — Last character: }",
+        "hasOutputParser": true,
+        "needsFallback": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
         -976,
-        288
+        352
       ],
-      "id": "e64a4291-e00b-4bc4-9087-eb8c6de95c6e",
+      "id": "d9076496-9d3b-44c7-ae43-3e2acda2368b",
       "name": "AI Agent",
       "onError": "continueErrorOutput"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1.1,
-      "position": [
-        -976,
-        480
-      ],
-      "id": "5fcdce44-028b-4318-b2c0-f0b179211555",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "5eJpt5lTfQLKrSZO",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "raw",
-        "jsonOutput": "=/**\n * Increments retry metadata for the current failed workflow attempt.\n *\n * The expression:\n * - increases `retryCount` by 1 (starting from 0 if missing),\n * - stores the most relevant error message,\n * - writes an ISO timestamp for when the retry state was updated.\n *\n * Intended for n8n expression mode in an Edit Fields / Set node.\n *\n * @returns \n *   retryCount: number,\n *   errorMessage: string,\n *   errorTimestamp: string\n * Normalized retry state for downstream retry logic.\n */\n{{ {\n  \"retryCount\": Number($json.retryCount || 0) + 1,\n  \"errorMessage\": $json.error?.message || $json.errorMessage || \"Unknown agent error\",\n  \"errorTimestamp\": new Date().toISOString()\n} }}",
-        "includeOtherFields": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -640,
-        368
-      ],
-      "id": "d62fcab6-8b3b-44f4-9735-e448b8526cec",
-      "name": "SetRetryCount"
-    },
-    {
-      "parameters": {
-        "jsCode": "/**\n * Normalizes agent output into a consistent `task` object.\n *\n * The function reads the first available payload from `output`, `text`, `response`,\n * or falls back to the full current JSON. If the payload is a string, it attempts\n * to parse it as JSON. If parsing fails, it returns a safe fallback `{ isTask: false }`.\n *\n * The original item fields are preserved and extended with `task`.\n *\n * @returns {{ json: Record<string, unknown> & { task: unknown } }[]} An n8n item array with a normalized `task` field.\n */\nconst raw = $json.output ?? $json.text ?? $json.response ?? $json;\n\nlet task = raw;\nif (typeof raw === \"string\") {\n  try {\n    task = JSON.parse(raw);\n  } catch {\n    task = { isTask: false };\n  }\n}\n\nreturn [\n  {\n    json: {\n      ...$json,\n      task\n    }\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -608,
-        192
-      ],
-      "id": "b1970b2a-9ff6-4856-8db9-f80c11769052",
-      "name": "ParseAgentJson"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "bcf59fcb-e021-4dae-be40-315213874772",
-              "leftValue": "={{ $json.task.isTask }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        -416,
-        192
-      ],
-      "id": "f12a5af3-4424-4a5a-8fd6-67beeca0af2e",
-      "name": "If IsTaskTrue"
     },
     {
       "parameters": {
@@ -161,7 +82,7 @@
           "conditions": [
             {
               "id": "067b91d1-379b-44e7-8bb5-1c23c6a4532d",
-              "leftValue": "={{ !!$json.task?.title && !!$json.task?.date && !!$json.task?.category }}",
+              "leftValue": "={{ !!$json.output.title && !!$json.output.date && !!$json.output.category }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
@@ -176,25 +97,25 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -208,
-        96
+        -368,
+        320
       ],
-      "id": "d243ae9c-aca5-422d-adad-bb787ba02b90",
+      "id": "420df979-10a7-4526-bc54-82f82b5f1f9e",
       "name": "If RequiredFieldsPresent"
     },
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "=/**\n * Builds a normalized task payload for Firebase persistence.\n *\n * The payload:\n * - generates a unique string ID from the current timestamp,\n * - maps required fields from `$json.task`,\n * - sanitizes `priority` and `category` against allowed values,\n * - normalizes `subtasks` into `{ text, completed }` objects,\n * - sets default workflow metadata (`status`, `createdBySource`).\n *\n * Intended for n8n expression mode in an Edit Fields / Set node.\n *\n * @returns \n *   id: string,\n *   title: string,\n *   description: string,\n *   date: string,\n *   priority: string,\n *   category: \"technical-task\" | \"user-story\",\n *   assigned: unknown[],\n *   subtasks: { text: string, completed: boolean }[],\n *   status: \"triage\",\n *   createdByName: string,\n *   createdBySource: \"extern\"\n * }} Normalized task object ready to be stored.\n */\n{{ {\n  id: String(Date.now()),\n  title: $json.task.title,\n  description: $json.task.description || \"\",\n  date: $json.task.date,\n  priority: [\"urgent\",\"medium\",\"low\"].includes($json.task.priority) ? $json.task.priority : \"\",\n  category: [\"technical-task\",\"user-story\"].includes($json.task.category) ? $json.task.category : \"user-story\",\n  assigned: [],\n  subtasks: Array.isArray($json.task.subtasks)\n    ? $json.task.subtasks.map(s => ({ text: String(s), completed: false }))\n    : [],\n  status: \"triage\",\n  createdByName: $json.task.createdByName || \"\",\n  createdBySource: \"extern\"\n} }}",
+        "jsonOutput": "=/**\n * Builds a normalized task payload for Firebase persistence.\n *\n * The payload:\n * - generates a unique string ID from the current timestamp,\n * - maps required fields from `$json.task`,\n * - sanitizes `priority` and `category` against allowed values,\n * - normalizes `subtasks` into `{ text, completed }` objects,\n * - sets default workflow metadata (`status`, `createdBySource`).\n *\n * Intended for n8n expression mode in an Edit Fields / Set node.\n *\n * @returns \n *   id: string,\n *   title: string,\n *   description: string,\n *   date: string,\n *   priority: string,\n *   category: \"technical-task\" | \"user-story\",\n *   assigned: unknown[],\n *   subtasks: { text: string, completed: boolean }[],\n *   status: \"triage\",\n *   createdByName: string,\n *   createdBySource: \"extern\"\n * }} Normalized task object ready to be stored.\n */\n{{ {\n  id: String(Date.now()),\n  title: $json.output.title,\n  description: $json.output.description || \"\",\n  date: $json.output.date || \"\",\n  priority: [\"urgent\", \"medium\", \"low\"].includes($json.output.priority) ? $json.output.priority : \"medium\",\n  category: [\"technical-task\", \"user-story\"].includes($json.output.category) ? $json.output.category : \"user-story\",\n  assigned: [],\n  subtasks: Array.isArray($json.output.subtasks)\n    ? $json.output.subtasks.map(s => ({ text: s.title || String(s), completed: s.done ?? false }))\n    : [],\n  status: \"triage\",\n  createdByName: $json.output.createdByName || \"\",\n  createdBySource: $json.output.createdBySource || \"extern\"\n} }}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        0
+        -160,
+        304
       ],
-      "id": "5d806e03-535a-4d27-a0c2-05c72bd94d8d",
+      "id": "994eaa57-93e1-4eea-ab2d-fb99b7672890",
       "name": "BuildTaskPayload"
     },
     {
@@ -209,10 +130,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        208,
-        0
+        48,
+        304
       ],
-      "id": "fb31571c-4871-49e9-a691-e5d8d3be0e8b",
+      "id": "70f9f3a9-acd7-40fe-aa72-480375222b49",
       "name": "HTTP Request CreateTaskInFirebase"
     },
     {
@@ -222,10 +143,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2000,
-        640
+        -2208,
+        368
       ],
-      "id": "540d4933-352d-437a-bdf6-8558f5178494",
+      "id": "eaf913ba-3629-4797-8978-0419e5d07db5",
       "name": "CalculateDateKey"
     },
     {
@@ -235,11 +156,297 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1584,
-        640
+        -1792,
+        368
       ],
-      "id": "306e4e44-5a11-4fa8-a8e5-7162ac62245e",
+      "id": "50031d4d-bf0a-4abf-9e85-16b4cb02583d",
       "name": "InitializeEntry"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "q": "={{ 'from:' + (($('joinemailrequest@gmail.com (IMAP)').item.json.from || '').match(/<([^>]+)>/)?.[1] || '') + ' subject:\"' + (($('joinemailrequest@gmail.com (IMAP)').item.json.subject || '').replace(/\"/g, '')) + '\"' }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1584,
+        368
+      ],
+      "id": "da52e2dc-e2fb-469f-a395-3079a3ab6a85",
+      "name": "FilterCurrentMessage",
+      "webhookId": "a85f02a8-2062-475b-9514-09937ec4a854",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "emailType": "text",
+        "message": "=Hello, \n\nthank you for reaching out. \nUnfortunately, we are currently experiencing technical difficulties and were unable to process your request automatically. \n\nOur team has received the message and will address it immediately.We apologize for the inconvenience.  \n\nBest regards, \nJoin Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        528
+      ],
+      "id": "5240334c-357b-43d6-b74a-5998cb5598a2",
+      "name": "Send ErrorMessage",
+      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "emailType": "text",
+        "message": "=Hello,  \n\nthank you for reaching out to us. \nYour request has been successfully received and added to our Kanbanboard. Our team will review and process it as soon as possible.  \n\nHere is a summary of your submission:  \nTitle: {{ $('BuildTaskPayload').item.json.title }} \nCategory: {{ $('BuildTaskPayload').item.json.category }} \nPriority: {{ $('BuildTaskPayload').item.json.priority || 'Not specified' }} \nDue Date: {{ $('BuildTaskPayload').item.json.date }}  \n\nIf you have any questions, simply reply to this email.  \n\nBest regards, \nJoin Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        304
+      ],
+      "id": "4622992f-5310-4b87-aa13-f0cb7cc9ee13",
+      "name": "Send SuccessMessage",
+      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "Label_5076039637280646665"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        704
+      ],
+      "id": "3c92afee-4e1d-43a2-9d3b-d7a62c6b1fef",
+      "name": "MoveToInProgress (Limit)",
+      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -752,
+        704
+      ],
+      "id": "2fe307d1-6510-4815-919a-3ef1bf67b4a3",
+      "name": "RemoveInboxLabel (Limit)",
+      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "Label_2"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        304
+      ],
+      "id": "2a6e3a03-e1b4-4a4c-9f4c-587a5cb7790d",
+      "name": "MoveToDone (Success)",
+      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        304
+      ],
+      "id": "b0826b23-d24d-4b71-8167-8968800c9b9b",
+      "name": "RemoveInboxLabel (Success)",
+      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "emailType": "text",
+        "message": "=Hello,\n\nthank you for reaching out.\nWe have reached our daily request limit for today, so we are currently unable to process your request automatically. However, our team has received your message and will handle it as soon as possible.\n\nWe apologize for the inconvenience.\n\nBest regards,\nJoin Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1168,
+        704
+      ],
+      "id": "70729656-c4d6-48e7-ae4c-118cc133f99c",
+      "name": "Send LimitMessage",
+      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "Label_5076039637280646665"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        528
+      ],
+      "id": "0109ba75-70d7-42d8-934f-9ab4226ee1b9",
+      "name": "MoveToInProgress (Error)",
+      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('FilterCurrentMessage').first().json.id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        528
+      ],
+      "id": "f1fc352c-430a-4a12-92c2-10d12a05ee65",
+      "name": "RemoveInboxLabel (Error)",
+      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "extern-task-status-changed",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2416,
+        592
+      ],
+      "id": "96210c38-0560-472e-8f10-0fb6430cfbda",
+      "name": "Webhook",
+      "webhookId": "2408bd57-b04d-4fb0-8b7a-9415302b0d6e"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.recipientEmail }}",
+        "subject": "=Update on your request: {{ $json.body.title }}",
+        "emailType": "text",
+        "message": "=Hello,\n\nyour request \"{{$json.body.title}}\" has been moved from \"{{$json.body.fromStatus}}\" to \"{{$json.body.toStatus}}\".\n\nOur team will process it as soon as possible.\n\nBest regards,\nJoin Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -2208,
+        592
+      ],
+      "id": "0b2fdcf4-d0ca-4d40-8875-2bcf692df487",
+      "name": "Send MoveMessage",
+      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RdwMlxodmGWZTMDk",
+          "name": "Gmail OAuth2 API"
+        }
+      }
     },
     {
       "parameters": {
@@ -268,11 +475,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1168,
-        640
+        -1376,
+        368
       ],
-      "id": "60de788d-5cfa-465b-b100-dae6a71b586a",
-      "name": "If countLessLimit"
+      "id": "d29b2b37-e06c-4b54-b898-d6ec51d0655e",
+      "name": "If dailyLimitReached"
     },
     {
       "parameters": {
@@ -285,12 +492,12 @@
           },
           "conditions": [
             {
-              "id": "49f1db1a-cf89-42fa-ab9f-19f69aabe907",
-              "leftValue": "={{ $json.retryCount }}",
-              "rightValue": 3,
+              "id": "bcf59fcb-e021-4dae-be40-315213874772",
+              "leftValue": "={{ $json.output.isTask }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "lt"
+                "type": "boolean",
+                "operation": "equals"
               }
             }
           ],
@@ -301,307 +508,61 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -448,
-        448
+        -576,
+        336
       ],
-      "id": "871f7f9b-dbf1-44d3-aee0-7da7b1b85e24",
-      "name": "If retryCountLess3"
+      "id": "40458203-4ead-4cd3-a216-c171c89d6d47",
+      "name": "If IsItARealTask"
     },
     {
       "parameters": {
-        "operation": "getAll",
-        "limit": 1,
-        "filters": {
-          "q": "={{ 'from:' + (($('joinemailrequest@gmail.com (IMAP)').item.json.from || '').match(/<([^>]+)>/)?.[1] || '') + ' subject:\"' + (($('joinemailrequest@gmail.com (IMAP)').item.json.subject || '').replace(/\"/g, '')) + '\"' }}"
-        }
+        "jsonSchemaExample": "{\n  \"isTask\": false,\n  \"title\": \"Beispiel Aufgabe\",\n  \"date\": \"2024-01-15\",\n  \"category\": \"Allgemein\",\n  \"description\": \"Kurze Beschreibung der Aufgabe\",\n  \"priority\": \"medium\",\n  \"subtasks\": [\n    {\n      \"title\": \"Teilaufgabe 1\",\n      \"done\": false\n    }\n  ],\n  \"createdByName\": \"Max Mustermann\",\n  \"createdBySource\": \"extern\"\n}"
       },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
       "position": [
-        -1376,
-        640
+        -768,
+        544
       ],
-      "id": "e86f2b1f-275f-4cda-8cb2-3b260aa0f1cc",
-      "name": "FilterCurrentMessage",
-      "webhookId": "a85f02a8-2062-475b-9514-09937ec4a854",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
+      "id": "f5beef9e-1ed7-4f23-825b-f8bbc6f33b14",
+      "name": "Structured Output Parser"
     },
     {
       "parameters": {
-        "operation": "reply",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "emailType": "text",
-        "message": "=Hello, \n\nthank you for reaching out. \nUnfortunately, we are currently experiencing technical difficulties and were unable to process your request automatically. \n\nOur team has received the message and will address it immediately.We apologize for the inconvenience.  \n\nBest regards, \nJoin Team",
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -240,
-        464
-      ],
-      "id": "111ced09-2b6c-4df6-b567-1feaeeaa8e13",
-      "name": "Send ErrorMessage",
-      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
-      "executeOnce": true,
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "amount": 20
-      },
-      "type": "n8n-nodes-base.wait",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -1184,
-        288
+        -1088,
+        544
       ],
-      "id": "0fc4fa3e-e9e4-44e7-a655-f0a6e0fefa5e",
-      "name": "Wait 20s",
-      "webhookId": "f95851f0-83a8-4552-af45-879c85a69079"
+      "id": "769be1a9-0f81-4f51-8638-16a6f59f8783",
+      "name": "Gemini-2.5 flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "eyDjUffFs3jgGEf2",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
     },
     {
       "parameters": {
-        "operation": "reply",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "emailType": "text",
-        "message": "=Hello,  \n\nthank you for reaching out to us. \nYour request has been successfully received and added to our Kanbanboard. Our team will review and process it as soon as possible.  \n\nHere is a summary of your submission:  \nTitle: {{ $('ParseAgentJson').item.json.task.title }} \nCategory: {{ $('ParseAgentJson').item.json.task.category }} \nPriority: {{ $('ParseAgentJson').item.json.task.priority || 'Not specified' }} \nDue Date: {{ $('ParseAgentJson').item.json.task.date }}  \n\nIf you have any questions, simply reply to this email.  \n\nBest regards, \nJoin Team",
         "options": {}
       },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
       "position": [
-        624,
-        0
+        -928,
+        544
       ],
-      "id": "068db226-aa90-4dc9-b003-37874bae3e1e",
-      "name": "Send SuccessMessage",
-      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
-      "executeOnce": true,
+      "id": "39affef9-b19e-41be-9055-04e39baee7fb",
+      "name": "Gemini-3 flash",
       "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "addLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "Label_5076039637280646665"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -752,
-        704
-      ],
-      "id": "478595ac-fd9d-4fa5-8aa0-90b4ef15a613",
-      "name": "MoveToInProgress (Limit)",
-      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "removeLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "INBOX"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -544,
-        704
-      ],
-      "id": "f1d54a2d-2e1e-4d61-95b8-58fde6985326",
-      "name": "RemoveInboxLabel (Limit)",
-      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "addLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "Label_2"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        832,
-        0
-      ],
-      "id": "164317c9-a16e-4d88-b2c3-4033364389f9",
-      "name": "MoveToDone (Success)",
-      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "removeLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "INBOX"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        1040,
-        0
-      ],
-      "id": "2e9bf479-987e-4145-9a9f-3632898f04e3",
-      "name": "RemoveInboxLabel (Success)",
-      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "reply",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "emailType": "text",
-        "message": "=Hello,\n\nthank you for reaching out.\nWe have reached our daily request limit for today, so we are currently unable to process your request automatically. However, our team has received your message and will handle it as soon as possible.\n\nWe apologize for the inconvenience.\n\nBest regards,\nJoin Team",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -960,
-        704
-      ],
-      "id": "2d48bbdc-f9be-4ede-9936-7eb3cb6f4b03",
-      "name": "Send LimitMessage",
-      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
-      "executeOnce": true,
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "addLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "Label_5076039637280646665"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -32,
-        464
-      ],
-      "id": "6012ea2b-0643-4afe-901d-aa0690c5871d",
-      "name": "MoveToInProgress (Error)",
-      "webhookId": "a60c9282-913c-41c9-b434-c3b3478f732b",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "removeLabels",
-        "messageId": "={{ $('FilterCurrentMessage').item.json.id }}",
-        "labelIds": [
-          "INBOX"
-        ]
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        176,
-        464
-      ],
-      "id": "87c8b721-3479-499c-91ef-0e01e572d810",
-      "name": "RemoveInboxLabel (Error)",
-      "webhookId": "3ba2d620-8bc6-4c7d-8466-4e8da1b2c2fb",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "extern-task-status-changed",
-        "responseMode": "lastNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -2208,
-        432
-      ],
-      "id": "2affda14-0f8b-4f6a-9c56-b671365df562",
-      "name": "Webhook",
-      "webhookId": "2408bd57-b04d-4fb0-8b7a-9415302b0d6e"
-    },
-    {
-      "parameters": {
-        "sendTo": "={{ $json.body.recipientEmail }}",
-        "subject": "=Update on your request: {{ $json.body.title }}",
-        "emailType": "text",
-        "message": "=Hello,\n\nyour request \"{{$json.body.title}}\" has been moved from \"{{$json.body.fromStatus}}\" to \"{{$json.body.toStatus}}\".\n\nOur team will process it as soon as possible.\n\nBest regards,\nJoin Team",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
-      "position": [
-        -2000,
-        432
-      ],
-      "id": "93f2d189-93d6-476b-bb81-f3f34b63fa9d",
-      "name": "Send MoveMessage",
-      "webhookId": "195b2d30-b99c-4a0f-b68e-c93a36bc264c",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "JXoxhKu7z0jflXdv",
-          "name": "Gmail OAuth2 API"
+        "googlePalmApi": {
+          "id": "eKlWlB5BcmDWcRtg",
+          "name": "Join 278b5"
         }
       }
     }
@@ -634,19 +595,8 @@
       "main": [
         [
           {
-            "node": "Send SuccessMessage",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
             "node": "AI Agent",
-            "type": "ai_languageModel",
+            "type": "main",
             "index": 0
           }
         ]
@@ -656,47 +606,14 @@
       "main": [
         [
           {
-            "node": "ParseAgentJson",
+            "node": "If IsItARealTask",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "SetRetryCount",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "SetRetryCount": {
-      "main": [
-        [
-          {
-            "node": "If retryCountLess3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ParseAgentJson": {
-      "main": [
-        [
-          {
-            "node": "If IsTaskTrue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If IsTaskTrue": {
-      "main": [
-        [
-          {
-            "node": "If RequiredFieldsPresent",
+            "node": "Send ErrorMessage",
             "type": "main",
             "index": 0
           }
@@ -736,7 +653,7 @@
       "main": [
         [
           {
-            "node": "HTTP Request setLimit",
+            "node": "Send SuccessMessage",
             "type": "main",
             "index": 0
           }
@@ -765,47 +682,11 @@
         ]
       ]
     },
-    "If countLessLimit": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Send LimitMessage",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If retryCountLess3": {
-      "main": [
-        [
-          {
-            "node": "Wait 20s",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Send ErrorMessage",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "FilterCurrentMessage": {
       "main": [
         [
           {
-            "node": "If countLessLimit",
+            "node": "If dailyLimitReached",
             "type": "main",
             "index": 0
           }
@@ -817,17 +698,6 @@
         [
           {
             "node": "MoveToInProgress (Error)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait 20s": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
             "type": "main",
             "index": 0
           }
@@ -899,6 +769,68 @@
           }
         ]
       ]
+    },
+    "If dailyLimitReached": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request setLimit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send LimitMessage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If IsItARealTask": {
+      "main": [
+        [
+          {
+            "node": "If RequiredFieldsPresent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-2.5 flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-3 flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -906,11 +838,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "59eb651f-a5c8-427b-b931-bfa67e7b8ad9",
+  "versionId": "ab3b83e3-58bd-46b5-9eb6-9ee5fb99fd67",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b21b2cbf873f27c879759a951eb8b80c4351754665b2b2e54df96c5f54a2bc4a"
+    "instanceId": "015e51d0fb022223dceb718b40282c7398320836f59b29ee77562125ff1b9c90"
   },
-  "id": "1VWKDtamOupvUglC",
+  "id": "gLK6ixVUq44X7Gtd",
   "tags": []
 }

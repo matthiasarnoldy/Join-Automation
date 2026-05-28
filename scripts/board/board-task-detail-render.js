@@ -53,7 +53,7 @@
     * @param {boolean} isExtern - True if task source is extern.
     * @returns {void} Nothing.
     */
-   function applyTaskDetailSourceUi(elements, isExtern) {
+   function applyTaskDetailSourceUi(elements, isExtern, profileIsExtern = isExtern) {
       const { icon, text, badge, aiBadge, profileIcon, profileText } = elements;
       if (icon) icon.src = isExtern ? "../assets/icons/desktop/board__extern.svg" : "../assets/icons/desktop/board__member.svg";
       if (text) text.textContent = isExtern ? "Extern" : "Member";
@@ -62,8 +62,8 @@
          badge.classList.toggle("task-detail__creator--extern", isExtern);
       }
       if (aiBadge) aiBadge.style.display = isExtern ? "inline-flex" : "none";
-      if (profileIcon) profileIcon.src = isExtern ? "../assets/icons/desktop/board__attachemail.svg" : "../assets/icons/desktop/board__profile.svg";
-      if (profileText) profileText.textContent = isExtern ? "E-mail" : "Profile";
+      if (profileIcon) profileIcon.src = profileIsExtern ? "../assets/icons/desktop/board__attachemail.svg" : "../assets/icons/desktop/board__profile.svg";
+      if (profileText) profileText.textContent = profileIsExtern ? "E-mail" : "Profile";
    }
 
    /**
@@ -72,7 +72,7 @@
     * @param {boolean} isExtern - True if task source is extern.
     * @returns {void} Nothing.
     */
-   function setTaskDetailCreatorBadges(isExtern) {
+   function setTaskDetailCreatorBadges(isExtern, profileIsExtern = isExtern) {
       const icon = document.getElementById("taskDetailSourceIcon");
       const text = document.getElementById("taskDetailSourceText");
       const badge = document.getElementById("taskDetailSourceBadge");
@@ -80,7 +80,7 @@
       const profileIcon = document.getElementById("taskDetailProfileIcon");
       const profileText = document.getElementById("taskDetailProfileText");
       applyTaskDetailSourceUi(
-         { icon, text, badge, aiBadge, profileIcon, profileText }, isExtern
+         { icon, text, badge, aiBadge, profileIcon, profileText }, isExtern, profileIsExtern
       );
    }
 
@@ -91,9 +91,9 @@
     * @param {string} createdBySource - The creator source ("member" or "extern").
     * @returns {void} Nothing.
     */
-   function setTaskDetailCreator(createdByName, createdBySource) {
+   function setTaskDetailCreator(createdByName, createdBySource, originalSource = createdBySource) {
       setTaskDetailText("taskDetailCreator", createdByName || "Unknown", "Unknown");
-      setTaskDetailCreatorBadges(createdBySource === "extern");
+      setTaskDetailCreatorBadges(createdBySource === "extern", originalSource === "extern");
    }
 
    /**
@@ -239,7 +239,8 @@
       const isMember = await isMemberByEmail(taskData.createdByName);
       setTaskDetailCreator(
          taskData.createdByName,
-         isMember ? "member" : "extern"
+         isMember ? "member" : "extern",
+         taskData.createdBySource
       );
       renderTaskDetailAssigned(taskData.assigned || []);
       renderTaskDetailSubtasks(taskData.subtasks || []);
