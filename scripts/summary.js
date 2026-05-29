@@ -331,9 +331,9 @@ function updateUrgentCount(tasks) {
  * @returns {void} Nothing.
  */
 function updateEmailRequestCount(tasks) {
-    const triageCount = tasks.filter(task => task.status === "triage").length;
+    const externCount = tasks.filter(task => task.createdBySource === "extern").length;
     const emailRequestElement = document.getElementById("emailRequestCount");
-    if (emailRequestElement) emailRequestElement.textContent = triageCount;
+    if (emailRequestElement) emailRequestElement.textContent = externCount;
 }
 
 

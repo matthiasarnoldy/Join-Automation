@@ -139,6 +139,8 @@
 .task-detail__field-value {
    font-size: 20px;
    color: #000000;
+   word-break: break-all;
+   overflow-wrap: anywhere;
 }
 
 .task-detail__priority {

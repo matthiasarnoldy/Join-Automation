@@ -169,12 +169,17 @@ function getCategoryInputValue() {
 
 /**
  * Returns the created by name for current user.
- * @returns {string} The creator name.
+ * @returns {Promise<string>} The creator name.
  */
-function getCreatedByName() {
+async function getCreatedByName() {
    const uid = getSaveTaskAuthUserIdFromUrl();
    if (!uid) return "Unknown";
    if (uid.toLowerCase().includes("guest")) return "Guest";
+   try {
+      const response = await fetch(`${SAVE_TASK_BASE_URL}users/${encodeURIComponent(uid)}.json`);
+      const user = await response.json();
+      if (user?.name) return user.name;
+   } catch (_) {}
    return uid;
 }
 
@@ -198,9 +203,9 @@ function getBasicInputs() {
  * Creates the task data.
  *
  * @param {string|number|null} [existingId=null] - The existing ID used for this operation. Defaults to null.
- * @returns {object} The task data object.
+ * @returns {Promise<object>} The task data object.
  */
-function createTaskData(existingId = null) {
+async function createTaskData(existingId = null) {
    const basicInputs = getBasicInputs();
    const existingTask = existingId ? window.BoardData?.getTask?.(existingId) : null;
    return {
@@ -209,7 +214,7 @@ function createTaskData(existingId = null) {
       assigned: getSelectedContacts(),
       subtasks: getSubtasksList(),
       status: getDialogStatus(),
-      createdByName: existingTask?.createdByName || getCreatedByName(),
+      createdByName: existingTask?.createdByName || await getCreatedByName(),
       createdBySource: existingTask?.createdBySource || "intern",
    };
 }
@@ -354,7 +359,7 @@ async function saveTaskToBoard() {
    if (isTaskSaveInProgress) return false;
    isTaskSaveInProgress = true;
    const editContext = getDialogEditContext();
-   const taskData = createTaskData(editContext.taskId);
+   const taskData = await createTaskData(editContext.taskId);
    try {
       await persistTaskData(editContext, taskData);
       return handleSaveSuccess(editContext.isEdit);

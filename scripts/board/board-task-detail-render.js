@@ -31,22 +31,6 @@
    }
 
    /**
-    * Checks whether a user exists based on the email address.
-   *
-   * @param {string} email - the email-adress.
-   * @returns {Promise<boolean>} True, if user exist.
-   */
-   async function isMemberByEmail(email) {
-      if (!email) return false;
-      const response = await fetch(`${window.JOIN_CONFIG.BASE_URL}users.json`);
-      const users = await response.json();
-      const usersArray = Object.values(users || {});
-      return usersArray.some(user =>
-         user.email?.toLowerCase() === email.toLowerCase()
-      );
-   }
-
-   /**
     * Applies source-specific UI state to task detail badges.
     *
     * @param {object} elements - The badge and profile elements.
@@ -236,10 +220,10 @@
       setTaskDetailText("taskDetailDescription", taskData.description, "No description");
       setTaskDetailText("taskDetailDate", taskData.date, "No due date");
       setTaskDetailPriority(taskData.priority);
-      const isMember = await isMemberByEmail(taskData.createdByName);
+      const isExtern = taskData.createdBySource === "extern";
       setTaskDetailCreator(
          taskData.createdByName,
-         isMember ? "member" : "extern",
+         isExtern ? "extern" : "member",
          taskData.createdBySource
       );
       renderTaskDetailAssigned(taskData.assigned || []);

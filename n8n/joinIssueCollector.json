@@ -82,7 +82,7 @@
           "conditions": [
             {
               "id": "067b91d1-379b-44e7-8bb5-1c23c6a4532d",
-              "leftValue": "={{ !!$json.output.title && !!$json.output.date && !!$json.output.category }}",
+              "leftValue": "={{ !!$json.output.title && !!$json.output.date && !!$json.output.category && $json.output.isTask }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
@@ -97,8 +97,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -368,
-        320
+        -576,
+        336
       ],
       "id": "420df979-10a7-4526-bc54-82f82b5f1f9e",
       "name": "If RequiredFieldsPresent"
@@ -112,8 +112,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        304
+        -368,
+        320
       ],
       "id": "994eaa57-93e1-4eea-ab2d-fb99b7672890",
       "name": "BuildTaskPayload"
@@ -130,8 +130,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        48,
-        304
+        -160,
+        320
       ],
       "id": "70f9f3a9-acd7-40fe-aa72-480375222b49",
       "name": "HTTP Request CreateTaskInFirebase"
@@ -224,8 +224,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        256,
-        304
+        48,
+        320
       ],
       "id": "4622992f-5310-4b87-aa13-f0cb7cc9ee13",
       "name": "Send SuccessMessage",
@@ -297,8 +297,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        464,
-        304
+        256,
+        320
       ],
       "id": "2a6e3a03-e1b4-4a4c-9f4c-587a5cb7790d",
       "name": "MoveToDone (Success)",
@@ -321,8 +321,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        672,
-        304
+        464,
+        320
       ],
       "id": "b0826b23-d24d-4b71-8167-8968800c9b9b",
       "name": "RemoveInboxLabel (Success)",
@@ -483,39 +483,6 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "bcf59fcb-e021-4dae-be40-315213874772",
-              "leftValue": "={{ $json.output.isTask }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        -576,
-        336
-      ],
-      "id": "40458203-4ead-4cd3-a216-c171c89d6d47",
-      "name": "If IsItARealTask"
-    },
-    {
-      "parameters": {
         "jsonSchemaExample": "{\n  \"isTask\": false,\n  \"title\": \"Beispiel Aufgabe\",\n  \"date\": \"2024-01-15\",\n  \"category\": \"Allgemein\",\n  \"description\": \"Kurze Beschreibung der Aufgabe\",\n  \"priority\": \"medium\",\n  \"subtasks\": [\n    {\n      \"title\": \"Teilaufgabe 1\",\n      \"done\": false\n    }\n  ],\n  \"createdByName\": \"Max Mustermann\",\n  \"createdBySource\": \"extern\"\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -535,7 +502,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -1088,
+        -1040,
         544
       ],
       "id": "769be1a9-0f81-4f51-8638-16a6f59f8783",
@@ -554,7 +521,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -928,
+        -912,
         544
       ],
       "id": "39affef9-b19e-41be-9055-04e39baee7fb",
@@ -606,7 +573,7 @@
       "main": [
         [
           {
-            "node": "If IsItARealTask",
+            "node": "If RequiredFieldsPresent",
             "type": "main",
             "index": 0
           }
@@ -629,13 +596,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Send ErrorMessage",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "BuildTaskPayload": {
@@ -788,17 +749,6 @@
         ]
       ]
     },
-    "If IsItARealTask": {
-      "main": [
-        [
-          {
-            "node": "If RequiredFieldsPresent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Structured Output Parser": {
       "ai_outputParser": [
         [
@@ -838,7 +788,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ab3b83e3-58bd-46b5-9eb6-9ee5fb99fd67",
+  "versionId": "29dfe0eb-b23b-4b2c-bfd2-b86170113995",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "015e51d0fb022223dceb718b40282c7398320836f59b29ee77562125ff1b9c90"
